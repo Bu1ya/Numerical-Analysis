@@ -13,16 +13,17 @@ using namespace std;
 
 const long double e = 2.7182818284590452;
 
-const long double a = -1;
+const long double a = -1; // [a;b]
 const long double b = 2;
+
 const long double alpha = 0.2;
 const int n = 20;
 
 
 vector<long double> generateNodes(string type) {
-    
+
     vector<long double> nodes;
-    
+
     if (type == "aUsingDefaultNodes") {
         for (int i = 0; i <= n; i++) {
             nodes.push_back(a + i * ((b - a) / n));
@@ -30,7 +31,7 @@ vector<long double> generateNodes(string type) {
     }
     else if (type == "bUsingDefaultNodes") {
         for (int i = 0; i <= n; i++) {
-            nodes.push_back((a + b - ((b - a) * cos(((2 * i + 1) * atan(1)*4) / (2 * (n + 1)))))/2);
+            nodes.push_back((a + b - ((b - a) * cos(((2 * i + 1) * atan(1) * 4) / (2 * (n + 1))))) / 2);
         }
     }
     else if (type == "aUsingDisplacedNodes") {
@@ -77,9 +78,6 @@ long double lagrangePolynomial(long double x, vector<long double> nodes, string 
     long double result = 0;
 
     if (mode == "aUsingDisplacedNodes" || mode == "bUsingDisplacedNodes") {
-        //for (int i = 0; i <= n; i++) {
-        //    nodes[i] += alpha * ((b - a) / n);
-        //}
         x += alpha * ((b - a) / n);
     }
 
@@ -100,17 +98,12 @@ long double lagrangePolynomial(long double x, vector<long double> nodes, string 
 long double newtonForwardPolynomial(long double x, vector<long double> nodes, string mode) {
     long double result = function(nodes[0]);
 
-    vector<long double> nodesBefore = nodes;
-
     if (mode == "aUsingDisplacedNodes" || mode == "bUsingDisplacedNodes") {
-        for (int i = 0; i <= n; i++) {
-            nodes[i] += alpha * ((b - a) / n);
-        }
         x += alpha * ((b - a) / n);
     }
 
     for (int i = 1; i <= n; i++) {
-        long double tempResult = dividedDifference(0, i, nodesBefore);
+        long double tempResult = dividedDifference(0, i, nodes);
         for (int j = 0; j <= i - 1; j++) {
             tempResult *= (x - nodes[j]);
         }
@@ -123,17 +116,12 @@ long double newtonForwardPolynomial(long double x, vector<long double> nodes, st
 long double newtonBackwardsPolynomial(long double x, vector<long double> nodes, string mode) {
     long double result = function(nodes[n]);
 
-    vector<long double> nodesBefore = nodes;
-
     if (mode == "aUsingDisplacedNodes" || mode == "bUsingDisplacedNodes") {
-        for (int i = 0; i <= n; i++) {
-            nodes[i] += alpha * ((b - a) / n);
-        }
         x += alpha * ((b - a) / n);
     }
 
     for (int i = 1; i <= n; i++) {
-        long double tempResult = dividedDifference(n-i, n, nodesBefore);
+        long double tempResult = dividedDifference(n - i, n, nodes);
         for (int j = 0; j <= i - 1; j++) {
             tempResult *= (x - nodes[n - j]);
         }
@@ -162,7 +150,6 @@ void printLagrangePolynomialResultUsingDefaultLinearNodesGeneration(string mode)
             << setw(20) << lagrangePolynomial(nodes[i], nodes, mode) << " | "
             << setw(21) << function(nodes[i]) - lagrangePolynomial(nodes[i], nodes, mode) << " | " << '\n';
     }
-    cout << " ***********************************************************************************************" << '\n';
 }
 
 void printLagrangePolynomialResultUsingDisplacedLinearNodesGeneration(string mode) {
@@ -175,7 +162,6 @@ void printLagrangePolynomialResultUsingDisplacedLinearNodesGeneration(string mod
             << setw(20) << lagrangePolynomial(nodes[i], nodes, mode) << " | "
             << setw(21) << function(nodes[i] + alpha * ((b - a) / n)) - lagrangePolynomial(nodes[i], nodes, mode) << " | " << '\n';
     }
-    cout << " ***********************************************************************************************" << '\n';
 }
 
 void printLagrangePolynomialResultUsingDefaultCosinusNodesGeneration(string mode) {
@@ -188,7 +174,6 @@ void printLagrangePolynomialResultUsingDefaultCosinusNodesGeneration(string mode
             << setw(20) << lagrangePolynomial(nodes[i], nodes, mode) << " | "
             << setw(21) << function(nodes[i]) - lagrangePolynomial(nodes[i], nodes, mode) << " | " << '\n';
     }
-    cout << " ***********************************************************************************************" << '\n';
 }
 
 void printLagrangePolynomialResultUsingDisplacedCosinusNodesGeneration(string mode) {
@@ -201,7 +186,6 @@ void printLagrangePolynomialResultUsingDisplacedCosinusNodesGeneration(string mo
             << setw(20) << lagrangePolynomial(nodes[i], nodes, mode) << " | "
             << setw(21) << function(nodes[i] + alpha * ((b - a) / n)) - lagrangePolynomial(nodes[i], nodes, mode) << " | " << '\n';
     }
-    cout << " ***********************************************************************************************" << '\n';
 }
 
 void printNewtonForwardPolynomialResultUsingDefaultLinearNodesGeneration(string mode) {
@@ -214,7 +198,6 @@ void printNewtonForwardPolynomialResultUsingDefaultLinearNodesGeneration(string 
             << setw(20) << newtonForwardPolynomial(nodes[i], nodes, mode) << " | "
             << setw(21) << function(nodes[i]) - newtonForwardPolynomial(nodes[i], nodes, mode) << " | " << '\n';
     }
-    cout << " ***********************************************************************************************" << '\n';
 }
 
 void printNewtonForwardPolynomialResultUsingDisplacedLinearNodesGeneration(string mode) {
@@ -223,11 +206,10 @@ void printNewtonForwardPolynomialResultUsingDisplacedLinearNodesGeneration(strin
     printHeader();
     for (int i = 0; i <= n; i++) {
         cout << fixed << " | " << setw(21) << nodes[i] << " | "
-            << setw(20) << function(nodes[i]) << " | "
+            << setw(20) << function(nodes[i] + alpha * ((b - a) / n)) << " | "
             << setw(20) << newtonForwardPolynomial(nodes[i], nodes, mode) << " | "
-            << setw(21) << function(nodes[i]) - newtonForwardPolynomial(nodes[i], nodes, mode) << " | " << '\n';
+            << setw(21) << function(nodes[i] + alpha * ((b - a) / n)) - newtonForwardPolynomial(nodes[i], nodes, mode) << " | " << '\n';
     }
-    cout << " ***********************************************************************************************" << '\n';
 }
 
 void printNewtonForwardPolynomialResultUsingDefaultCosinusNodesGeneration(string mode) {
@@ -240,7 +222,6 @@ void printNewtonForwardPolynomialResultUsingDefaultCosinusNodesGeneration(string
             << setw(20) << newtonForwardPolynomial(nodes[i], nodes, mode) << " | "
             << setw(21) << function(nodes[i]) - newtonForwardPolynomial(nodes[i], nodes, mode) << " | " << '\n';
     }
-    cout << " ***********************************************************************************************" << '\n';
 }
 
 void printNewtonForwardPolynomialResultUsingDisplacedCosinusNodesGeneration(string mode) {
@@ -249,11 +230,10 @@ void printNewtonForwardPolynomialResultUsingDisplacedCosinusNodesGeneration(stri
     printHeader();
     for (int i = 0; i <= n; i++) {
         cout << fixed << " | " << setw(21) << nodes[i] << " | "
-            << setw(20) << function(nodes[i]) << " | "
+            << setw(20) << function(nodes[i] + alpha * ((b - a) / n)) << " | "
             << setw(20) << newtonForwardPolynomial(nodes[i], nodes, mode) << " | "
-            << setw(21) << function(nodes[i]) - newtonForwardPolynomial(nodes[i], nodes, mode) << " | " << '\n';
+            << setw(21) << function(nodes[i] + alpha * ((b - a) / n)) - newtonForwardPolynomial(nodes[i], nodes, mode) << " | " << '\n';
     }
-    cout << " ***********************************************************************************************" << '\n';
 }
 
 void printNewtonBackwardsPolynomialResultUsingDefaultLinearNodesGeneration(string mode) {
@@ -266,7 +246,6 @@ void printNewtonBackwardsPolynomialResultUsingDefaultLinearNodesGeneration(strin
             << setw(20) << newtonBackwardsPolynomial(nodes[i], nodes, mode) << " | "
             << setw(21) << function(nodes[i]) - newtonBackwardsPolynomial(nodes[i], nodes, mode) << " | " << '\n';
     }
-    cout << " ***********************************************************************************************" << '\n';
 }
 
 void printNewtonBackwardsPolynomialResultUsingDisplacedLinearNodesGeneration(string mode) {
@@ -275,11 +254,10 @@ void printNewtonBackwardsPolynomialResultUsingDisplacedLinearNodesGeneration(str
     printHeader();
     for (int i = 0; i <= n; i++) {
         cout << fixed << " | " << setw(21) << nodes[i] << " | "
-            << setw(20) << function(nodes[i]) << " | "
+            << setw(20) << function(nodes[i] + alpha * ((b - a) / n)) << " | "
             << setw(20) << newtonBackwardsPolynomial(nodes[i], nodes, mode) << " | "
-            << setw(21) << function(nodes[i]) - newtonBackwardsPolynomial(nodes[i], nodes, mode) << " | " << '\n';
+            << setw(21) << function(nodes[i] + alpha * ((b - a) / n)) - newtonBackwardsPolynomial(nodes[i], nodes, mode) << " | " << '\n';
     }
-    cout << " ***********************************************************************************************" << '\n';
 }
 
 void printNewtonBackwardsPolynomialResultUsingDefaultCosinusNodesGeneration(string mode) {
@@ -292,7 +270,6 @@ void printNewtonBackwardsPolynomialResultUsingDefaultCosinusNodesGeneration(stri
             << setw(20) << newtonBackwardsPolynomial(nodes[i], nodes, mode) << " | "
             << setw(21) << function(nodes[i]) - newtonBackwardsPolynomial(nodes[i], nodes, mode) << " | " << '\n';
     }
-    cout << " ***********************************************************************************************" << '\n';
 }
 
 void printNewtonBackwardsPolynomialResultUsingDisplacedCosinusNodesGeneration(string mode) {
@@ -301,11 +278,10 @@ void printNewtonBackwardsPolynomialResultUsingDisplacedCosinusNodesGeneration(st
     printHeader();
     for (int i = 0; i <= n; i++) {
         cout << fixed << " | " << setw(21) << nodes[i] << " | "
-            << setw(20) << function(nodes[i]) << " | "
+            << setw(20) << function(nodes[i] + alpha * ((b - a) / n)) << " | "
             << setw(20) << newtonBackwardsPolynomial(nodes[i], nodes, mode) << " | "
-            << setw(21) << function(nodes[i]) - newtonBackwardsPolynomial(nodes[i], nodes, mode) << " | " << '\n';
+            << setw(21) << function(nodes[i] + alpha * ((b - a) / n)) - newtonBackwardsPolynomial(nodes[i], nodes, mode) << " | " << '\n';
     }
-    cout << " ***********************************************************************************************" << '\n';
 }
 
 int main()
