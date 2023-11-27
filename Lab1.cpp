@@ -16,7 +16,7 @@ const long double e = 2.7182818284590452;
 const long double a = -1; // [a;b]
 const long double b = 2;
 
-const long double alpha = 0.2;
+const long double alpha = 0.3;
 const int n = 20;
 
 
