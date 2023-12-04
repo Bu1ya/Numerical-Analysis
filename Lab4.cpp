@@ -39,7 +39,7 @@ double trapezoidal() {
 
 double parabolic() {
     long double r = 1;
-    int n = 2;
+    int n = 1;
     long double I2n = 0;
     while (abs(r) > eps) {
         long double In = I2n;
