@@ -34,7 +34,7 @@ double trapezoidal() {
         r = (I2n - In) / 3;
         n *= 2;
     }
-    return I2n;
+    return I2n + r;
 }
 
 double parabolic() {
@@ -55,7 +55,7 @@ double parabolic() {
         r = (I2n - In) / 15;
         n *= 2;
     }
-    return I2n;
+    return I2n + r;
 }
 
 
